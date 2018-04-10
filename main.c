@@ -160,10 +160,13 @@ void SysTick_Handler2(void){}
 
 void SysTick_Handler(void){
   if(Flag == 2){
+      if(TimerTick_PWM == 40*MY_PRESCALER){ // 43*MY_PRESCALER){
+          voltReg_OFF();
+      }
     if(TimerTick_PWM == 87*MY_PRESCALER){ // 43*MY_PRESCALER){
       Flag = 0;
       TIM1->BDTR &= (uint16_t)~TIM_BDTR_MOE;
-      voltReg_stop();
+      // voltReg_stop();
       GPIO_ResetBits(GPIOE, GPIO_Pin_8);
       GPIO_ResetBits(GPIOE, GPIO_Pin_9);
       //TIM_CtrlPWMOutputs(TIM1, DISABLE);
@@ -180,12 +183,14 @@ void SysTick_Handler(void){
     TimerTick_PWM = 1;
   }
    
-  
-  if(mainTimerTick == 1000000*MY_PRESCALER){
-    voltReg_start();
+  if(mainTimerTick == (1000000 - 1)*MY_PRESCALER){
+    voltReg_ON();
+  }else  if(mainTimerTick == 1000000*MY_PRESCALER){
+    // voltReg_start();
+ 
     Flag = 1;
     mainTimerTick = 0;
-  } else
+  } //else
     mainTimerTick++;
 }
 
@@ -200,7 +205,7 @@ int main()
   //SystemTick Interrupt - 0.25 microsecond
   SysTick_Config(SystemCoreClock/(1000000*MY_PRESCALER));
   
-  voltReg_setOutputLow();
+  // voltReg_setOutputLow();
   
   //Creating PWM signal
   
@@ -225,7 +230,8 @@ int main()
   double Ts = 0.0001, w = 2*PI*100;
   char temp[10];  
   
-  initVoltageReg();
+  // initVoltageReg();
+  voltReg_initOutputLow();
   
   //Sending message to bluetooth module
   while(1){}

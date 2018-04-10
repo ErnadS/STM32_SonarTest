@@ -24,7 +24,7 @@ void initVoltageReg(void) {
     TM_PWM_Init();
 }
 
-void voltReg_setOutputLow() {
+void voltReg_initOutputLow() {
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13;
@@ -34,7 +34,15 @@ void voltReg_setOutputLow() {
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
     
+    voltReg_OFF();
+}
+
+void voltReg_ON() {
     GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13);
+}
+
+void voltReg_OFF() {
+    GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13);
 }
 
 void voltReg_stop() {
