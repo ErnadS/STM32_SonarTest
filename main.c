@@ -19,7 +19,7 @@ uint32_t multiplier;
 uint8_t message_received = 0;
 volatile char received_string[MAX_STRLEN+1];
 uint32_t mainTimerTick = 0;
-uint8_t TimerTick_PWM = 0;
+uint16_t TimerTick_PWM = 0;
 
 uint16_t pwm_period;
 uint8_t Flag = 1;
@@ -158,39 +158,42 @@ void EnablePWM(void);
 
 void SysTick_Handler2(void){}
 
+
+int nPingLenth = 200;
+
 void SysTick_Handler(void){
-  if(Flag == 2){
-      if(TimerTick_PWM == 40*MY_PRESCALER){ // 43*MY_PRESCALER){
-          voltReg_OFF();
-      }
-    if(TimerTick_PWM == 87*MY_PRESCALER){ // 43*MY_PRESCALER){
-      Flag = 0;
-      TIM1->BDTR &= (uint16_t)~TIM_BDTR_MOE;
-      // voltReg_stop();
-      GPIO_ResetBits(GPIOE, GPIO_Pin_8);
-      GPIO_ResetBits(GPIOE, GPIO_Pin_9);
-      //TIM_CtrlPWMOutputs(TIM1, DISABLE);
-      TimerTick_PWM = 1;
-    } 
-    else
-      TimerTick_PWM++;
-  }else if(Flag == 1){
-    //PWM_Handler();
-    TIM1->CNT = 0;
-    TIM1->BDTR |= TIM_BDTR_MOE;
-    //TIM_CtrlPWMOutputs(TIM1, ENABLE);
-    Flag = 2;
-    TimerTick_PWM = 1;
-  }
-   
-  if(mainTimerTick == (1000000 - 1)*MY_PRESCALER){
-    voltReg_ON();
-  }else  if(mainTimerTick == 1000000*MY_PRESCALER){
-    // voltReg_start();
- 
-    Flag = 1;
-    mainTimerTick = 0;
-  } //else
+    if(Flag == 2){
+        if(TimerTick_PWM == (nPingLenth -23)*MY_PRESCALER){ // 65*MY_PRESCALER){
+            voltReg_OFF();
+        }
+        if(TimerTick_PWM == nPingLenth*MY_PRESCALER){ // 87*MY_PRESCALER){
+            Flag = 0;
+            TIM1->BDTR &= (uint16_t)~TIM_BDTR_MOE;  // stop PWM
+            // voltReg_stop();
+            GPIO_ResetBits(GPIOE, GPIO_Pin_8);
+            GPIO_ResetBits(GPIOE, GPIO_Pin_9);
+            //TIM_CtrlPWMOutputs(TIM1, DISABLE);
+            TimerTick_PWM = 1;
+        } 
+        else
+            TimerTick_PWM++;
+    } else if(Flag == 1){
+        //PWM_Handler();
+        TIM1->CNT = 0;
+        TIM1->BDTR |= TIM_BDTR_MOE;              // Start PWM
+        //TIM_CtrlPWMOutputs(TIM1, ENABLE);
+        Flag = 2;
+        TimerTick_PWM = 1;
+    }
+    
+    if(mainTimerTick == (1000000 - 1)*MY_PRESCALER){
+        //voltReg_ON();
+    }else  if(mainTimerTick == 1000000*MY_PRESCALER){   // Svake sekunde upali
+        // voltReg_start();
+        voltReg_ON();
+        Flag = 1;
+        mainTimerTick = 0;
+    } //else
     mainTimerTick++;
 }
 
