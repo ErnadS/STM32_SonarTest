@@ -103,9 +103,12 @@ int main()
   while(!RCC_WaitForHSEStartUp());
   
   
+  adc_init();
   
   uart_GPIO_init();
   pwm_init();
+  
+  
  
   //SystemTick Interrupt (SysTick_Handler) - 0.25 microsecond
   SysTick_Config(SystemCoreClock/(1000000*MY_PRESCALER));

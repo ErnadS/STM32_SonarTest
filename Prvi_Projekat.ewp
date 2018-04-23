@@ -1845,6 +1845,9 @@
   <group>
     <name>hardware</name>
     <file>
+      <name>$PROJ_DIR$\hardware\Adc.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\hardware\PwmController.c</name>
     </file>
   </group>
@@ -1858,6 +1861,12 @@
     <name>STM32F4xx_StdPeriph_Driver</name>
     <file>
       <name>$PROJ_DIR$\Include\src\misc.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Include\src\stm32f4xx_adc.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Include\src\stm32f4xx_dma.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\Include\src\stm32f4xx_gpio.c</name>

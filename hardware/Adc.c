@@ -30,6 +30,17 @@ float convertToVoltage(uint16_t measured) {
 	return (measured * REF_VOLT) / MAX_MEASUR;
 }
 
+void adc_init(void) {
+    RCC_Configuration();
+    GPIO_Configuration(); 
+    NVIC_Configuration2();   
+    TIM2_Configuration(48000); // sample sa 48kHz
+
+    DMA_Configuration();
+    
+    ADC_Configuration();
+}
+
 void RCC_Configuration(void)
 {
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
