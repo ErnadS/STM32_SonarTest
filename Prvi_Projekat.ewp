@@ -1843,6 +1843,12 @@
     </file>
   </group>
   <group>
+    <name>hardware</name>
+    <file>
+      <name>$PROJ_DIR$\hardware\PwmController.c</name>
+    </file>
+  </group>
+  <group>
     <name>STM32F4-Discovery</name>
     <file>
       <name>$PROJ_DIR$\Include\STM32F4-Discovery\stm32f4_discovery.c</name>
