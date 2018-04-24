@@ -24,10 +24,14 @@ void initVoltageReg(void) {
     TM_PWM_Init();
 }
 
+// Inicializiraj PB12 (Q4 koji puni zadnji kondenzator) da starta sa Low
+// Njega palimo malo prije samog pinga i gasimo malo prije nego ping prestane tako
+// da dobijemo "njezan" porast u startu i opadnje na kraju napona koji napaja trafo
+// Q3 koji puni power banku je uvjek upaljen.
 void voltReg_initOutputLow() {
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12; // | GPIO_Pin_13;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -38,33 +42,30 @@ void voltReg_initOutputLow() {
 }
 
 void voltReg_ON() {
-    GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13);
+    GPIO_SetBits(GPIOD, GPIO_Pin_12);// | GPIO_Pin_13);
 }
 
 void voltReg_OFF() {
-    GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13);
+    GPIO_ResetBits(GPIOD, GPIO_Pin_12);// | GPIO_Pin_13);
 }
 
 void voltReg_stop() {
     TIM_Cmd(TIM4, DISABLE);
     //setHigh();
-    // TIM4->BDTR &= (uint16_t)~TIM_BDTR_MOE;
+    TIM4->BDTR &= (uint16_t)~TIM_BDTR_MOE;
     GPIO_ResetBits(GPIOD, GPIO_Pin_12);
-    GPIO_ResetBits(GPIOD, GPIO_Pin_13);
-    
-    //TM_LEDS_Init();
+
+    TM_LEDS_Init();
 }
 
 void voltReg_start()
 {
     TIM4->CNT = 0;
     TIM_Cmd(TIM4, ENABLE);
-    /*TIM4->CNT = 0;
-    TIM4->BDTR |= TIM_BDTR_MOE;**/
+    TIM4->CNT = 0;
+    TIM4->BDTR |= TIM_BDTR_MOE;
 }
 
-
- 
 void TM_LEDS_Init(void) {
     GPIO_InitTypeDef GPIO_InitStruct;
     
@@ -74,11 +75,10 @@ void TM_LEDS_Init(void) {
     /* Alternating functions for pins */
     GPIO_PinAFConfig(GPIOD, GPIO_PinSource12, GPIO_AF_TIM4);
     GPIO_PinAFConfig(GPIOD, GPIO_PinSource13, GPIO_AF_TIM4);
-    /* GPIO_PinAFConfig(GPIOD, GPIO_PinSource14, GPIO_AF_TIM4);
-    GPIO_PinAFConfig(GPIOD, GPIO_PinSource15, GPIO_AF_TIM4);*/
+
     
     /* Set pins */
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13; //| GPIO_Pin_14 | GPIO_Pin_15;
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12; // | GPIO_Pin_13; //| GPIO_Pin_14 | GPIO_Pin_15;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
@@ -136,7 +136,7 @@ void TM_TIMER_Init(void) {
     /* Initialize TIM4 */
     TIM_TimeBaseInit(TIM4, &TIM_BaseStruct);
     /* Start count on TIM4 */
-    // TIM_Cmd(TIM4, ENABLE);
+    TIM_Cmd(TIM4, ENABLE);
 }
  
 void TM_PWM_Init(void) {
@@ -169,13 +169,13 @@ void TM_PWM_Init(void) {
     
     Remember: if pulse_length is larger than TIM_Period, you will have output HIGH all the time
 */
-    TIM_OCStruct.TIM_Pulse =   40;//419;// 2099; /* 25% duty cycle */
+    TIM_OCStruct.TIM_Pulse =   10;//419;// 2099; /* 25% duty cycle */
     TIM_OC1Init(TIM4, &TIM_OCStruct);
     TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
-    
-    TIM_OCStruct.TIM_Pulse = 40;//209;//4199; /* 50% duty cycle */
+    /*
+    TIM_OCStruct.TIM_Pulse = 40;//209;//4199; // 50% duty cycle 
     TIM_OC2Init(TIM4, &TIM_OCStruct);
-    TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
+    TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);*/
 
     
     voltReg_start();

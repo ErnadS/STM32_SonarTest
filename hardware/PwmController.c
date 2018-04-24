@@ -28,7 +28,8 @@ int nPingLength_us = 200;
 
 void pwm_init(void) {
     // uPwm_period = 16799;   //10KHz
-    uPwm_period = 840;   //200KHz
+    // uPwm_period = 840;      // 200kHz
+    uPwm_period = 840*4;    //  50kHz
     // uPwm_period = TimerClock/PWM_Freq - 1;
     
     pwm_GPIO_Initialization();
@@ -111,11 +112,11 @@ void pwm_on_tick(void) {
     if(pwmFlag == 2){
         if(pwmTimerTick == (nPingLength_us -23) * PWM_PRESCALER){ // 65*MY_PRESCALER){
             voltReg_OFF();
+            // voltReg_stop();
         }
         if(pwmTimerTick == nPingLength_us * PWM_PRESCALER){ // 87*MY_PRESCALER){
             pwmFlag = 0;
             TIM1->BDTR &= (uint16_t)~TIM_BDTR_MOE;  // stop PWM
-            voltReg_stop();
             GPIO_ResetBits(GPIOE, GPIO_Pin_8);
             GPIO_ResetBits(GPIOE, GPIO_Pin_9);
             //TIM_CtrlPWMOutputs(TIM1, DISABLE);
@@ -133,9 +134,8 @@ void pwm_on_tick(void) {
     
     if(pwmMainTimerTick == (1000000 - 1)*PWM_PRESCALER){
         voltReg_ON();
+        // voltReg_start();
     } else  if(pwmMainTimerTick == 1000000*PWM_PRESCALER){   // Svake sekunde upali
-       // voltReg_start();
-        // voltReg_ON();
         pwmFlag = 1;
         pwmMainTimerTick = 0;
     } //else

@@ -18,7 +18,7 @@ Stop=1
 Freq=10000000
 MultiCoreRunAll=1
 [DebugChecksum]
-Checksum=-2065231771
+Checksum=2051574127
 [StLinkDriver]
 CStepIntDis=_ 0
 stlinkserialNo=2798FD0D
@@ -97,8 +97,7 @@ SumSortOrder=0
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\hardware\Adc.c}.215.5" 0 0 1 "" 0 "" 0
-Count=1
+Count=0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""

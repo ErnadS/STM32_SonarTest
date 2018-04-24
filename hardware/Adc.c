@@ -208,7 +208,6 @@ void DMA2_Stream0_IRQHandler(void) // Called at 1 KHz for 200 KHz sample rate, L
   /* Test on DMA Stream Transfer Complete interrupt */
   if(DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0))
   {
-      
       zzz ++;
       if (zzz == 1)
           zzz = 1;
